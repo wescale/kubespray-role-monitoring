@@ -1,0 +1,55 @@
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: node-exporter
+  annotations:
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
+  labels:
+    kubernetes.io/cluster-service: 'true'
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  privileged: true
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'downwardAPI'
+    - 'emptyDir'
+    - 'persistentVolumeClaim'
+    - 'secret'
+    - 'projected'
+    - 'hostPath'
+
+  allowedHostPaths:
+    - pathPrefix: "/proc"
+      readOnly: false
+    - pathPrefix: "/sys"
+      readOnly: false
+    - pathPrefix: "/"
+      readOnly: true
+
+  hostNetwork: true
+  hostPorts:
+    - min: 9100
+      max: 9100
+
+  hostIPC: false
+  hostPID: true
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  readOnlyRootFilesystem: false

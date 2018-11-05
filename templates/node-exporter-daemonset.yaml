@@ -1,0 +1,90 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: >-
+    node-exporter
+  namespace: >-
+    monitoring
+  labels:
+    app: node-exporter
+
+spec:
+
+  selector:
+    matchLabels:
+      app: node-exporter
+
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      containers:
+
+        - name: node-exporter
+          image: quay.io/prometheus/node-exporter:v0.16.0
+          args:
+            - "--web.listen-address=127.0.0.1:9101"
+            - "--path.procfs=/host/proc"
+            - "--path.sysfs=/host/sys"
+            - "--collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+)($|/)"
+            - "--collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)$"
+
+          resources:
+            limits:
+              cpu: 102m
+              memory: 180Mi
+            requests:
+              cpu: 102m
+              memory: 180Mi
+
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly: false
+
+            - name: sys
+              mountPath: /host/sys
+              readOnly: false
+
+            - name: root
+              mountPath: /host/root
+              readOnly: true
+              mountPropagation: HostToContainer
+
+        - name: kube-rbac-proxy
+          image: quay.io/coreos/kube-rbac-proxy:v0.3.1
+          args:
+            - "--secure-listen-address=:9100"
+            - "--upstream=http://127.0.0.1:9101/"
+          ports:
+            - containerPort: 9100
+              hostPort: 9100
+              name: https
+          resources:
+            limits:
+              cpu: 20m
+              memory: 40Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+      hostNetwork: true
+      hostPID: true
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccountName: node-exporter
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+      volumes:
+        - name: proc
+          hostPath: { "path": "/proc" }
+
+        - name: sys
+          hostPath: { "path": "/sys" }
+
+        - name: root
+          hostPath: { "path": "/" }
