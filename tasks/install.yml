@@ -1,0 +1,59 @@
+---
+- name: Monitoring | Create addon dir
+  file:
+    path: "{{ monitoring_addons_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Monitoring | Create manifests
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ monitoring_addons_dir }}/{{ item.name }}"
+  loop: >-
+    {{
+      monitoring_templates_ns_and_cr
+      + monitoring_templates_first
+      + monitoring_templates_second
+      + monitoring_templates_third
+    }}
+
+- name: Monitoring | Apply manifests chapter 1
+  kube:
+    name: "{{ item.name }}"
+    namespace: "{{ item.ns|default('monitoring') }}"
+    kubectl: "{{ kubectl_path }}"
+    resource: "{{ item.type }}"
+    filename: "{{ monitoring_addons_dir }}/{{ item.name }}"
+    state: "latest"
+  loop: >-
+    {{ monitoring_templates_ns_and_cr }}
+
+- name: Monitoring | Apply manifests chapter 1
+  kube:
+    name: "{{ item.name }}"
+    namespace: "{{ item.ns|default('monitoring') }}"
+    kubectl: "{{ kubectl_path }}"
+    resource: "{{ item.type }}"
+    filename: "{{ monitoring_addons_dir }}/{{ item.name }}"
+    state: "latest"
+  loop: >-
+    {{ monitoring_templates_first }}
+
+- name: Monitoring | Apply manifests chapter 2
+  shell: >-
+    {{ bin_dir }}/kubectl apply -f {{ monitoring_addons_dir }}/{{ item.name }}
+  loop: >-
+    {{ monitoring_templates_second }}
+
+- name: Monitoring | Apply manifests chapter 3
+  kube:
+    name: "{{ item.name }}"
+    namespace: "{{ item.ns|default('monitoring') }}"
+    resource: "{{ item.type }}"
+    filename: "{{ monitoring_addons_dir }}/{{ item.name }}"
+    state: "latest"
+    kubectl: "{{ kubectl_path }}"
+  loop: >-
+    {{ monitoring_templates_third }}

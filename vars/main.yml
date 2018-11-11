@@ -1,0 +1,62 @@
+---
+kubectl_path: "{{ bin_dir }}/kubectl"
+monitoring_templates_ns_and_cr:
+  - { type: "ns", name: "00namespace-namespace.yaml" }
+  - { type: "customresourcedefinitions", name: "0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml" }
+  - { type: "customresourcedefinitions", name: "0prometheus-operator-0prometheusCustomResourceDefinition.yaml" }
+  - { type: "customresourcedefinitions", name: "0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml" }
+  - { type: "customresourcedefinitions", name: "0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml" }
+
+monitoring_templates_first:
+  - { type: "clusterrolebindings", name: "0prometheus-operator-clusterRoleBinding.yaml" }
+  - { type: "clusterroles", name: "0prometheus-operator-clusterRole.yaml" }
+  - { type: "deployments", name: "0prometheus-operator-deployment.yaml" }
+  - { type: "serviceaccounts", name: "0prometheus-operator-serviceAccount.yaml" }
+  - { type: "servicemonitors", name: "0prometheus-operator-serviceMonitor.yaml" }
+  - { type: "services", name: "0prometheus-operator-service.yaml" }
+  - { type: "alertmanagers", name: "alertmanager-alertmanager.yaml" }
+  - { type: "secrets", name: "alertmanager-secret.yaml" }
+  - { type: "serviceaccounts", name: "alertmanager-serviceAccount.yaml" }
+  - { type: "servicemonitors", name: "alertmanager-serviceMonitor.yaml" }
+  - { type: "services", name: "alertmanager-service.yaml" }
+  - { type: "secrets", name: "grafana-dashboardDatasources.yaml" }
+  - { type: "configmaps", name: "grafana-dashboardDefinitions.yaml" }
+  - { type: "configmaps", name: "grafana-dashboardSources.yaml" }
+  - { type: "deployments", name: "grafana-deployment.yaml" }
+  - { type: "serviceaccounts", name: "grafana-serviceAccount.yaml" }
+  - { type: "services", name: "grafana-service.yaml" }
+  - { type: "clusterrolebindings", name: "kube-state-metrics-clusterRoleBinding.yaml" }
+  - { type: "clusterroles", name: "kube-state-metrics-clusterRole.yaml" }
+  - { type: "deployment", name: "kube-state-metrics-deployment.yaml" }
+  - { type: "rolebindings", name: "kube-state-metrics-roleBinding.yaml" }
+  - { type: "roles", name: "kube-state-metrics-role.yaml" }
+  - { type: "serviceaccounts", name: "kube-state-metrics-serviceAccount.yaml" }
+  - { type: "servicemonitors", name: "kube-state-metrics-serviceMonitor.yaml" }
+  - { type: "service", name: "kube-state-metrics-service.yaml" }
+  - { type: "clusterrolebindings", name: "node-exporter-clusterRoleBinding.yaml" }
+  - { type: "clusterroles", name: "node-exporter-clusterRole.yaml" }
+  - { type: "podsecuritypolicies", name: "node-exporter-psp.yaml" }
+  - { type: "ns", name: "node-exporter-daemonset.yaml" }
+  - { type: "serviceaccounts", name: "node-exporter-serviceAccount.yaml" }
+  - { type: "servicemonitors", name: "node-exporter-serviceMonitor.yaml" }
+  - { type: "services", name: "node-exporter-service.yaml" }
+  - { type: "clusterrolebindings", name: "prometheus-clusterRoleBinding.yaml" }
+  - { type: "clusterroles", name: "prometheus-clusterRole.yaml" }
+  - { type: "prometheus", name: "prometheus-prometheus.yaml" }
+  - { type: "rolebindings", name: "prometheus-roleBindingConfig.yaml" }
+
+monitoring_templates_second:
+- { ns: "default", type: "rolebindings", name: "prometheus-roleBindingSpecificNamespaces.yaml" }
+- { type: "roles", name: "prometheus-roleConfig.yaml" }
+- { ns: "default", type: "roles", name: "prometheus-roleSpecificNamespaces.yaml" }
+
+monitoring_templates_third:
+  - { type: "prometheusrules", name: "prometheus-rules.yaml" }
+  - { type: "serviceaccounts", name: "prometheus-serviceAccount.yaml" }
+  - { type: "servicemonitors", name: "prometheus-serviceMonitorApiserver.yaml" }
+  - { type: "servicemonitors", name: "prometheus-serviceMonitorCoreDNS.yaml" }
+  - { type: "servicemonitors", name: "prometheus-serviceMonitorKubeControllerManager.yaml" }
+  - { type: "servicemonitors", name: "prometheus-serviceMonitorKubelet.yaml" }
+  - { type: "servicemonitors", name: "prometheus-serviceMonitorKubeScheduler.yaml" }
+  - { type: "servicemonitors", name: "prometheus-serviceMonitor.yaml" }
+  - { type: "services", name: "prometheus-service.yaml" }
