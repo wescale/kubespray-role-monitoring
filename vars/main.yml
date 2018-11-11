@@ -1,11 +1,24 @@
 ---
 kubectl_path: "{{ bin_dir }}/kubectl"
 monitoring_templates_ns_and_cr:
-  - { type: "ns", name: "00namespace-namespace.yaml" }
-  - { type: "customresourcedefinitions", name: "0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml" }
-  - { type: "customresourcedefinitions", name: "0prometheus-operator-0prometheusCustomResourceDefinition.yaml" }
-  - { type: "customresourcedefinitions", name: "0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml" }
-  - { type: "customresourcedefinitions", name: "0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml" }
+  - type: "ns"
+    name: "00namespace-namespace.yaml"
+
+  - type: "customresourcedefinitions"
+    name: "0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml"
+    expect: "alertmanagers.monitoring.coreos.com"
+
+  - type: "customresourcedefinitions"
+    name: "0prometheus-operator-0prometheusCustomResourceDefinition.yaml"
+    expect: "prometheuses.monitoring.coreos.com"
+
+  - type: "customresourcedefinitions"
+    name: "0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml"
+    expect: "prometheusrules.monitoring.coreos.com"
+
+  - type: "customresourcedefinitions"
+    name: "0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml"
+    expect: "servicemonitors.monitoring.coreos.com"
 
 monitoring_templates_first:
   - { type: "clusterrolebindings", name: "0prometheus-operator-clusterRoleBinding.yaml" }

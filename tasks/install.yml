@@ -30,6 +30,19 @@
   loop: >-
     {{ monitoring_templates_ns_and_cr }}
 
+- name: Monitoring | Check custom resource definition availability
+  shell: >-
+    {{ kubectl_path }} get customresourcedefinitions.apiextensions.k8s.io
+    | grep {{ item.expect }}
+  loop: >-
+    {{ monitoring_templates_ns_and_cr }}
+  when:
+    - item.expect is defined
+  register: crd_check
+  until: crd_check.rc == 0
+  retries: 10
+  delay: 5
+
 - name: Monitoring | Apply manifests chapter 1
   kube:
     name: "{{ item.name }}"
