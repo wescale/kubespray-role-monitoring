@@ -32,6 +32,7 @@
 
 - name: Monitoring | Check custom resource definition availability
   shell: >-
+    sleep 5 &&
     {{ kubectl_path }} get customresourcedefinitions.apiextensions.k8s.io
     | grep {{ item.expect }}
   loop: >-
